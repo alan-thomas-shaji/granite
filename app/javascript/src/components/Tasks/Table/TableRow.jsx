@@ -10,7 +10,7 @@ const TableRow = ({ data }) => (
           className="truncate block w-64 px-6 py-4 text-sm
             font-medium capitalize leading-8 text-bb-purple"
         >
-          {rowData.title}
+          {rowData.body}
         </td>
       </tr>
     ))}

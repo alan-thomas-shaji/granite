@@ -7,6 +7,7 @@ import PageLoader from "components/PageLoader";
 
 import { setAuthHeaders } from "./apis/axios";
 import { initializeLogger } from "./common/logger";
+import CreateTask from "./components/Tasks/Create";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -27,8 +28,7 @@ const App = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" render={() => <div>Home</div>} />
-        <Route exact path="/about" render={() => <div>About</div>} />
+        <Route exact component={CreateTask} path="/tasks/create" />
         <Route exact component={Dashboard} path="/dashboard" />
       </Switch>
     </Router>

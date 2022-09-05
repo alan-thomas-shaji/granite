@@ -11,11 +11,11 @@ class Task < ApplicationRecord
   private
 
     def set_slug
-      title_slug = title.parameterize
+      body_slug = body.parameterize
       regex_pattern = "slug #{Constants::DB_REGEX_OPERATOR} ?"
       latest_task_slug = Task.where(
         regex_pattern,
-        "#{title_slug}$|#{title_slug}-[0-9]+$"
+        "#{body_slug}$|#{body_slug}-[0-9]+$"
       ).order("LENGTH(slug) DESC", slug: :desc).first&.slug
       slug_count = 0
       if latest_task_slug.present?
@@ -23,7 +23,7 @@ class Task < ApplicationRecord
         only_one_slug_exists = slug_count == 0
         slug_count = 1 if only_one_slug_exists
       end
-      slug_candidate = slug_count.positive? ? "#{title_slug}-#{slug_count + 1}" : title_slug
+      slug_candidate = slug_count.positive? ? "#{body_slug}-#{slug_count + 1}" : body_slug
       self.slug = slug_candidate
     end
 
