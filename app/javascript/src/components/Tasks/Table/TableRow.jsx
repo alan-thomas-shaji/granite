@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import Tooltip from "components/Tooltip";
 
 // eslint-disable-next-line arrow-body-style
-const TableRow = ({ data, showTask }) => {
+const TableRow = ({ data, destroyTask, showTask }) => {
   return (
     <tbody className="divide-y divide-gray-200 bg-white">
       {data.map(rowData => (
@@ -24,6 +24,18 @@ const TableRow = ({ data, showTask }) => {
               onClick={() => showTask(rowData.slug)}
             >
               Show
+            </a>
+          </td>
+          <td
+            className="cursor-pointer px-6 py-4 text-right
+            text-sm font-medium leading-5"
+          >
+            <a
+              className="text-red-500
+              hover:text-red-700"
+              onClick={() => destroyTask(rowData.slug)}
+            >
+              Delete
             </a>
           </td>
         </tr>
