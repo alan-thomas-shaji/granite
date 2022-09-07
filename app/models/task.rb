@@ -2,11 +2,23 @@
 
 class Task < ApplicationRecord
   MAX_BODY_LENGTH = 125
+  before_validation :set_body, if: :body_not_present
+  # after_validation :set_body
   validates :body, presence: true, length: { maximum: 125 }
   validates :slug, uniqueness: true
   validate :slug_not_changed
 
   before_create :set_slug
+  # before_save :change_body
+  after_save :change_body
+
+  def change_body
+    self.body = "Pay electricity & TV bill"
+    end
+
+  def body_not_present
+    self.body.blank?
+  end
 
   private
 
@@ -31,5 +43,9 @@ class Task < ApplicationRecord
       if slug_changed? && self.persisted?
         errors.add(:slug, t("task.slug.immutable"))
       end
+    end
+
+    def set_body
+      self.body = "Pay electricity bill"
     end
 end
