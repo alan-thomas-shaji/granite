@@ -14,9 +14,15 @@ const TableRow = ({ data, destroyTask, showTask }) => {
             className="truncate block w-64 px-6 py-4 text-sm
             font-medium capitalize leading-8 text-bb-purple"
           >
-            <Tooltip content={rowData.body} delay={200} direction="top">
-              <div className="truncate max-w-64 ">{rowData.body}</div>
+            <Tooltip content={rowData.title} delay={200} direction="top">
+              <div className="truncate max-w-64 ">{rowData.title}</div>
             </Tooltip>
+          </td>
+          <td
+            className="whitespace-no-wrap px-6 py-4 text-sm
+            font-medium leading-5 text-gray-900"
+          >
+            {rowData.assigned_user.name}
           </td>
           <td className="cursor-pointer px-6 py-4 text-right text-sm font-medium leading-5">
             <a
@@ -46,6 +52,7 @@ const TableRow = ({ data, destroyTask, showTask }) => {
 
 TableRow.propTypes = {
   data: PropTypes.array.isRequired,
+  destroyTask: PropTypes.func,
   showTask: PropTypes.func,
 };
 

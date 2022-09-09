@@ -8,7 +8,7 @@ const TableHeader = () => (
         className="bg-gray-50 px-6 py-3 text-left text-xs font-bold
         uppercase leading-4 tracking-wider text-bb-gray-600 text-opacity-50"
       >
-        Body
+        Title
       </th>
       <th
         className="bg-gray-50 px-6 py-3 text-left text-sm font-bold

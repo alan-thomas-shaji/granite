@@ -3,14 +3,17 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import tasksApi from "apis/tasks";
+import usersApi from "apis/users";
 import Container from "components/Container";
 import PageLoader from "components/PageLoader";
 
 import Form from "./Form";
 
 const Edit = ({ history }) => {
-  const [body, setBody] = useState("");
+  const [title, setTitle] = useState("");
   const [userId, setUserId] = useState("");
+  const [assignedUser, setAssignedUser] = useState("");
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const { slug } = useParams();
@@ -20,7 +23,7 @@ const Edit = ({ history }) => {
     try {
       await tasksApi.update({
         slug,
-        payload: { body },
+        payload: { title, assigned_user_id: userId },
       });
       setLoading(false);
       history.push("/dashboard");
@@ -30,29 +33,44 @@ const Edit = ({ history }) => {
     }
   };
 
+  const fetchUserDetails = async () => {
+    try {
+      const {
+        data: { users },
+      } = await usersApi.list();
+      setUsers(users);
+    } catch (error) {
+      logger.error(error);
+    }
+  };
+
   const fetchTaskDetails = async () => {
     try {
       const {
         data: {
-          task: { body, user_id },
+          task: { title },
+          assigned_user,
         },
       } = await tasksApi.show(slug);
-      setBody(body);
-      setUserId(user_id);
+      setTitle(title);
+      setAssignedUser(assigned_user);
+      setUserId(assigned_user.id);
     } catch (error) {
       logger.error(error);
-    } finally {
-      setPageLoading(false);
     }
   };
 
+  const loadData = async () => {
+    await Promise.all([fetchTaskDetails(), fetchUserDetails()]);
+    setPageLoading(false);
+  };
+
   useEffect(() => {
-    fetchTaskDetails();
+    loadData();
   }, []);
 
   if (pageLoading) {
     return (
-      // eslint-disable-next-line prettier/prettier
       <div className="h-screen w-screen">
         <PageLoader />
       </div>
@@ -62,13 +80,14 @@ const Edit = ({ history }) => {
   return (
     <Container>
       <Form
-        body={body}
+        assignedUser={assignedUser}
         handleSubmit={handleSubmit}
         loading={loading}
-        setBody={setBody}
+        setTitle={setTitle}
         setUserId={setUserId}
+        title={title}
         type="update"
-        userId={userId}
+        users={users}
       />
     </Container>
   );
