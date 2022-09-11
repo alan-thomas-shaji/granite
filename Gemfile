@@ -59,3 +59,6 @@ gem "react-rails"
 
 # bcrypt gem
 gem "bcrypt", "~> 3.1.13"
+
+# SimpleCov
+gem "simplecov", require: false, group: :test
