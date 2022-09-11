@@ -3,11 +3,12 @@
 class User < ApplicationRecord
   has_many :created_tasks, foreign_key: :task_owner_id, class_name: "Task"
   VALID_EMAIL_REGEX = /\A([\w+\-].?)+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i.freeze
+  MAX_NAME_LENGTH = 35
   MAX_EMAIL_LENGTH = 255
   has_many :assigned_tasks, foreign_key: :assigned_user_id, class_name: "Task"
   has_secure_password
   has_secure_token :authentication_token
-  validates :name, presence: true, length: { maximum: 35 }
+  validates :name, presence: true, length: { maximum: MAX_NAME_LENGTH }
   validates :email, presence: true,
     uniqueness: { case_sensitive: false },
     length: { maximum: MAX_EMAIL_LENGTH },
