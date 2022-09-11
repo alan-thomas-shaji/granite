@@ -39,6 +39,7 @@ const Edit = ({ history }) => {
         data: { users },
       } = await usersApi.list();
       setUsers(users);
+      logger.debug(users);
     } catch (error) {
       logger.error(error);
     }
@@ -52,6 +53,7 @@ const Edit = ({ history }) => {
           assigned_user,
         },
       } = await tasksApi.show(slug);
+
       setTitle(title);
       setAssignedUser(assigned_user);
       setUserId(assigned_user.id);
