@@ -49,11 +49,9 @@ const Edit = ({ history }) => {
     try {
       const {
         data: {
-          task: { title },
-          assigned_user,
+          task: { title, assigned_user },
         },
       } = await tasksApi.show(slug);
-
       setTitle(title);
       setAssignedUser(assigned_user);
       setUserId(assigned_user.id);
