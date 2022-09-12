@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 class Task < ApplicationRecord
+  MAXIMUM_TITLE_LENGTH = 125
   RESTRICTED_ATTRIBUTES = %i[title task_owner_id assigned_user_id]
+
   enum progress: { pending: "pending", completed: "completed" }
+  enum status: { starred: "starred", unstarred: "unstarred" }
+
   belongs_to :task_owner, foreign_key: "task_owner_id", class_name: "User"
   belongs_to :assigned_user, foreign_key: "assigned_user_id", class_name: "User"
   has_many :comments, dependent: :destroy
-
-  MAXIMUM_TITLE_LENGTH = 125
 
   validates :title, { presence: true, length: { maximum: MAXIMUM_TITLE_LENGTH } }
   validates :slug, { uniqueness: true }
@@ -17,6 +19,17 @@ class Task < ApplicationRecord
   before_create :set_slug
 
   private
+
+    def self.of_status(progress)
+      if progress == :pending
+        starred = pending.starred.order("updated_at DESC")
+        unstarred = pending.unstarred.order("updated_at DESC")
+      else
+        starred = completed.starred.order("updated_at DESC")
+        unstarred = completed.unstarred.order("updated_at DESC")
+      end
+      starred + unstarred
+    end
 
     def set_slug
       title_slug = title.parameterize
