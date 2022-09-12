@@ -28,8 +28,14 @@ class TaskTest < ActiveSupport::TestCase
   end
 
   def test_task_title_should_not_exceed_maximum_length
-    @task.title = "a" * (Task::MAX_TITLE_LENGTH + 1)
+    @task.title = "a" * (Task::MAXIMUM_TITLE_LENGTH + 1)
     assert_not @task.valid?
+  end
+
+  def test_exception_raised
+    assert_raises ActiveRecord::RecordNotFound do
+      Task.find(SecureRandom.uuid)
+    end
   end
 
   def test_task_count_increases_on_saving
@@ -38,15 +44,22 @@ class TaskTest < ActiveSupport::TestCase
     end
   end
 
+  def test_task_count_increases_on_saving
+    assert_difference ["Task.count"], 2 do
+      create(:task)
+      create(:task)
+    end
+  end
+
+  # def test_task_count_decreases_on_deleting
+  #   assert_difference ['Task.count'], -1 do
+  #     delete(:task)
+  #   end
+  # end
+
   def test_task_should_not_be_valid_without_title
     @task.title = ""
     assert_not @task.valid?
-  end
-
-  def test_task_slug_is_parameterized_title
-    title = @task.title
-    @task.save!
-    assert_equal title.parameterize, @task.slug
   end
 
   def test_incremental_slug_generation_for_tasks_with_duplicate_two_worded_titles
@@ -136,5 +149,23 @@ class TaskTest < ActiveSupport::TestCase
     tasks = create_list(:task, 10, assigned_user: @user, task_owner: @user)
     slugs = tasks.pluck(:slug)
     assert_equal slugs.uniq, slugs
+  end
+
+  def test_tasks_created_by_user_are_deleted_when_user_is_deleted
+    task_owner = build(:user)
+    create(:task, assigned_user: @user, task_owner: task_owner)
+
+    assert_difference "Task.count", -1 do
+      task_owner.destroy
+    end
+  end
+
+  def test_tasks_are_assigned_back_to_task_owners_before_assigned_user_is_destroyed
+    task_owner = build(:user)
+    task = create(:task, assigned_user: @user, task_owner: task_owner)
+
+    assert_equal task.assigned_user_id, @user.id
+    @user.destroy
+    assert_equal task.reload.assigned_user_id, task_owner.id
   end
 end
