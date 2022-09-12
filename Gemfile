@@ -66,3 +66,6 @@ gem "bcrypt", "~> 3.1.13"
 
 # SimpleCov
 gem "simplecov", require: false, group: :test
+
+# Pundit
+gem "pundit"
