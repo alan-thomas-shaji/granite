@@ -8,6 +8,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   # embed new test cases here...
+
   def test_user_should_not_be_valid_and_saved_without_name
     @user.name = ""
     assert_not @user.valid?
@@ -25,7 +26,7 @@ class UserTest < ActiveSupport::TestCase
 
     @user.save
     assert_includes @user.errors.full_messages, "Email can't be blank", "Email is invalid"
-end
+  end
 
   def test_user_should_not_be_valid_and_saved_if_email_not_unique
     @user.save!
@@ -72,7 +73,7 @@ end
     @user.password = nil
     assert_not @user.valid?
     assert_includes @user.errors.full_messages, "Password can't be blank"
-end
+  end
 
   def test_user_should_not_be_saved_without_password_confirmation
     @user.password_confirmation = nil
@@ -91,5 +92,23 @@ end
     second_user = create(:user)
 
     assert_not_same @user.authentication_token, second_user.authentication_token
+  end
+
+  def test_tasks_created_by_user_are_deleted_when_user_is_deleted
+    task_owner = build(:user)
+    create(:task, assigned_user: @user, task_owner: task_owner)
+
+    assert_difference "Task.count", -1 do
+      task_owner.destroy
+    end
+  end
+
+  def test_tasks_are_assigned_back_to_task_owners_before_assigned_user_is_destroyed
+    task_owner = build(:user)
+    task = create(:task, assigned_user: @user, task_owner: task_owner)
+
+    assert_equal task.assigned_user_id, @user.id
+    @user.destroy
+    assert_equal task.reload.assigned_user_id, task_owner.id
   end
 end
