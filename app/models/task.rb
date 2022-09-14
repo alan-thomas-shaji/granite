@@ -4,6 +4,8 @@ class Task < ApplicationRecord
   MAXIMUM_TITLE_LENGTH = 125
   RESTRICTED_ATTRIBUTES = %i[title task_owner_id assigned_user_id]
 
+  after_create :log_task_details
+
   enum progress: { pending: "pending", completed: "completed" }
   enum status: { starred: "starred", unstarred: "unstarred" }
 
@@ -52,5 +54,9 @@ class Task < ApplicationRecord
       if self.persisted? && slug_changed?
         errors.add(:slug, t("task.slug.immutable"))
       end
+    end
+
+    def log_task_details
+      TaskLoggerJob.perform_later(self)
     end
 end
