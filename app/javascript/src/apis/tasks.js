@@ -1,5 +1,10 @@
 import axios from "axios";
 
+const generatePdf = () => axios.post("/tasks/report", {});
+
+const download = () =>
+  axios.get("/tasks/report/download", { responseType: "blob" });
+
 const list = () => axios.get("/tasks");
 const create = payload =>
   axios.post("/tasks", {
@@ -25,6 +30,8 @@ const taskApi = {
   show,
   update,
   destroy,
+  generatePdf,
+  download,
 };
 
 export default taskApi;
